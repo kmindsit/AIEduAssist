@@ -11,31 +11,17 @@ const isValidEmail = (email) => {
 /**
  * Validate password strength
  * @param {string} password - Password to validate
- * @returns {object} - Object with isValid and errors array
+ * @returns {boolean} - True if password meets strength requirements
  */
 const validatePasswordStrength = (password) => {
-  const errors = [];
-
-  if (password.length < 6) {
-    errors.push('Password must be at least 6 characters long');
-  }
-
-  if (!/[A-Z]/.test(password)) {
-    errors.push('Password must contain at least one uppercase letter');
-  }
-
-  if (!/[a-z]/.test(password)) {
-    errors.push('Password must contain at least one lowercase letter');
-  }
-
-  if (!/[0-9]/.test(password)) {
-    errors.push('Password must contain at least one number');
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
+  if (!password || typeof password !== 'string') return false;
+  
+  if (password.length < 8) return false;
+  if (!/[A-Z]/.test(password)) return false;
+  if (!/[a-z]/.test(password)) return false;
+  if (!/[0-9]/.test(password)) return false;
+  
+  return true;
 };
 
 /**
