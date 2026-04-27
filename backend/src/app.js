@@ -7,6 +7,13 @@ const path = require('path');
 // Load environment variables
 dotenv.config();
 
+// Initialize SQLite Database
+const { connectDB } = require('./config/sqlite');
+connectDB().catch(err => {
+  console.error('Database initialization failed:', err);
+  process.exit(1);
+});
+
 // Initialize Express app
 const app = express();
 

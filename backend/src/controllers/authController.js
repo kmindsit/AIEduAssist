@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../models/UserSQLite');
 const { generateTokenPair, comparePassword } = require('../utils/tokenManager');
 const { isValidEmail, validatePasswordStrength } = require('../utils/validators');
 
@@ -45,23 +45,19 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Create new user
-    const newUser = new User({
+    // Create new user with SQLite
+    const newUser = await User.create({
       name: name.trim(),
       email: email.toLowerCase(),
       password,
-      role: role === 'instructor' ? 'instructor' : 'student',
-      isActive: true
+      role: role === 'instructor' ? 'instructor' : 'student'
     });
-
-    // Save user (password will be hashed by pre-save hook)
-    await newUser.save();
 
     // Generate tokens
     const tokens = generateTokenPair(newUser);
 
     // Return response without password
-    const userResponse = newUser.toObject();
+    const userResponse = { ...newUser };
     delete userResponse.password;
 
     res.status(201).json({
@@ -99,8 +95,8 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Find user by email (include password field)
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    // Find user by email
+    const user = await User.findByEmail(email);
     
     if (!user) {
       return res.status(401).json({
@@ -119,8 +115,8 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Compare passwords
-    const isPasswordValid = await comparePassword(password, user.password);
+    // Verify password
+    const isPasswordValid = await User.verifyPassword(user.id, password);
     
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -130,15 +126,11 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Update last login
-    user.lastLogin = new Date();
-    await user.save();
-
     // Generate tokens
     const tokens = generateTokenPair(user);
 
     // Return response without password
-    const userResponse = user.toObject();
+    const userResponse = { ...user };
     delete userResponse.password;
 
     res.status(200).json({
@@ -287,8 +279,7 @@ exports.changePassword = async (req, res) => {
     }
 
     // Update password
-    user.password = newPassword;
-    await user.save();
+    await User.updatePassword(user.id, newPassword);
 
     res.status(200).json({
       success: true,
