@@ -10,11 +10,11 @@ const userService = {
   getUserById: (userId) =>
     axiosInstance.get(`/users/${userId}`),
 
-  changePassword: (currentPassword, newPassword) =>
-    axiosInstance.post('/users/change-password', {
-      currentPassword,
-      newPassword,
-    }),
+  changePassword: (data) =>
+    axiosInstance.post('/users/change-password', data),
+
+  deleteAccount: () =>
+    axiosInstance.delete('/users/profile'),
 
   getUserStats: () =>
     axiosInstance.get('/users/stats'),

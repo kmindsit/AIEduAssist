@@ -4,8 +4,8 @@ const quizService = {
   getQuiz: (quizId) =>
     axiosInstance.get(`/quizzes/${quizId}`),
 
-  submitQuiz: (quizId, answers) =>
-    axiosInstance.post(`/quizzes/${quizId}/submit`, { answers }),
+  submitQuiz: (submissionData) =>
+    axiosInstance.post(`/quizzes/submit`, submissionData),
 
   getCourseQuizzes: (courseId) =>
     axiosInstance.get(`/courses/${courseId}/quizzes`),
@@ -21,6 +21,12 @@ const quizService = {
 
   deleteQuiz: (quizId) =>
     axiosInstance.delete(`/quizzes/${quizId}`),
+
+  getCourseCertification: (courseId) =>
+    axiosInstance.get(`/courses/${courseId}/certification`),
+
+  submitCertification: (submissionData) =>
+    axiosInstance.post(`/certificates/submit`, submissionData),
 };
 
 export default quizService;

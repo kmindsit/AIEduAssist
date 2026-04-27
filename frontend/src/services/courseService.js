@@ -25,8 +25,8 @@ const courseService = {
   getCourseContent: (courseId) =>
     axiosInstance.get(`/courses/${courseId}/content`),
 
-  rateCourse: (courseId, rating) =>
-    axiosInstance.post(`/courses/${courseId}/rate`, { rating }),
+  rateCourse: (courseId, ratingData) =>
+    axiosInstance.post(`/courses/${courseId}/rate`, ratingData),
 };
 
 export default courseService;

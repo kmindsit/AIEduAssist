@@ -10,6 +10,9 @@ const enrollmentService = {
   getEnrollmentDetails: (courseId) =>
     axiosInstance.get(`/enrollments/${courseId}`),
 
+  getEnrollmentByCourse: (courseId) =>
+    axiosInstance.get(`/enrollments/course/${courseId}`),
+
   updateProgress: (courseId, progress) =>
     axiosInstance.put(`/enrollments/${courseId}`, { progress }),
 
