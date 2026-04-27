@@ -51,4 +51,10 @@ router.delete('/:id', authMiddleware, instructorMiddleware, courseController.del
  */
 router.post('/:id/rate', authMiddleware, courseController.rateCourse);
 
+/**
+ * GET /api/courses/:id/analytics
+ * Get course analytics (Instructor only)
+ */
+router.get('/:id/analytics', authMiddleware, instructorMiddleware, require('../controllers/userController').getCourseAnalytics);
+
 module.exports = router;
