@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const response = await authService.login(email, password);
       
-      authService.setToken(response.data.token, response.data.refreshToken);
+      authService.setToken(response.data.tokens.accessToken, response.data.tokens.refreshToken);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
       setUser(response.data.user);
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const response = await authService.register(name, email, password);
       
-      authService.setToken(response.data.token, response.data.refreshToken);
+      authService.setToken(response.data.tokens.accessToken, response.data.tokens.refreshToken);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
       setUser(response.data.user);
