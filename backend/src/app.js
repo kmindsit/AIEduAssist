@@ -7,6 +7,13 @@ const path = require('path');
 // Load environment variables
 dotenv.config();
 
+// Initialize SQLite Database
+const { connectDB } = require('./config/sqlite');
+connectDB().catch(err => {
+  console.error('Database initialization failed:', err);
+  process.exit(1);
+});
+
 // Initialize Express app
 const app = express();
 
@@ -66,6 +73,21 @@ app.use('/api/quizzes', require('./routes/quizzes'));
 
 // Admin routes
 app.use('/api/admin', require('./routes/admin'));
+
+// Notification routes
+app.use('/api/notifications', require('./routes/notifications'));
+
+// Certificate routes
+app.use('/api/certificates', require('./routes/certificates'));
+
+// Discussion routes
+app.use('/api/discussions', require('./routes/discussions'));
+
+// Content routes
+app.use('/api/content', require('./routes/content'));
+
+// Preferences routes
+app.use('/api/preferences', require('./routes/preferences'));
 
 // ========================
 // Error Handling Middleware
