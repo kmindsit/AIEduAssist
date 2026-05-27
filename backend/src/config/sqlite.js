@@ -217,10 +217,113 @@ const createTables = () => {
         options TEXT,
         correctAnswer TEXT,
         explanation TEXT,
+        difficulty TEXT DEFAULT 'medium',
         "order" INTEGER,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
+      )
+    `);
+
+    // Quiz Attempts table (for detailed attempt tracking with scoring)
+    db.run(`
+      CREATE TABLE IF NOT EXISTS quiz_attempts (
+        id TEXT PRIMARY KEY,
+        quiz_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        attempt_number INTEGER,
+        answers TEXT,
+        total_time_seconds INTEGER,
+        score_percentage REAL,
+        passed INTEGER DEFAULT 0,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (quiz_id) REFERENCES quizzes(id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `);
+
+    // Conversations table for AI tutoring
+    db.run(`
+      CREATE TABLE IF NOT EXISTS conversations (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        course_id TEXT NOT NULL,
+        title TEXT,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (course_id) REFERENCES courses(id)
+      )
+    `);
+
+    // Conversation messages table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS conversation_messages (
+        id TEXT PRIMARY KEY,
+        conversation_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        message_type TEXT,
+        content TEXT NOT NULL,
+        tokens_used INTEGER,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (conversation_id) REFERENCES conversations(id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `);
+
+    // AI Cache table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS ai_cache (
+        id TEXT PRIMARY KEY,
+        query_hash TEXT UNIQUE NOT NULL,
+        response TEXT,
+        cache_type TEXT,
+        course_id TEXT,
+        ttl DATETIME,
+        hit_count INTEGER DEFAULT 0,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Generated Content table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS generated_content (
+        id TEXT PRIMARY KEY,
+        course_id TEXT NOT NULL,
+        content_type TEXT,
+        title TEXT,
+        content TEXT,
+        version INTEGER DEFAULT 1,
+        language TEXT DEFAULT 'en',
+        tokens_used INTEGER,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (course_id) REFERENCES courses(id)
+      )
+    `);
+
+    // Flashcard Sets table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS flashcard_sets (
+        id TEXT PRIMARY KEY,
+        generated_content_id TEXT NOT NULL,
+        title TEXT,
+        card_count INTEGER,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (generated_content_id) REFERENCES generated_content(id)
+      )
+    `);
+
+    // Flashcards table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS flashcards (
+        id TEXT PRIMARY KEY,
+        set_id TEXT NOT NULL,
+        front TEXT,
+        back TEXT,
+        difficulty TEXT,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (set_id) REFERENCES flashcard_sets(id)
       )
     `);
 

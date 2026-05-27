@@ -89,6 +89,8 @@ app.use('/api/content', require('./routes/content'));
 // Preferences routes
 app.use('/api/preferences', require('./routes/preferences'));
 
+// AI Tutoring routes
+app.use('/api/ai', require('./routes/aiTutoring'));
 // ========================
 // Error Handling Middleware
 // ========================
