@@ -1,73 +1,217 @@
-# API Documentation
+# AIEduAssist Backend - Complete API Documentation
 
-## Base URL
+## Quick Start
+
+**Base URL**: `http://localhost:5000/api`
+
+**Authentication**: Include token in header: `Authorization: Bearer <accessToken>`
+
+---
+
+## Auth Endpoints
+
+### Register User
 ```
-http://localhost:5000/api
-```
+POST /auth/register
 
-## Authentication
-All protected endpoints require a JWT token in the `Authorization` header:
-```
-Authorization: Bearer <token>
-```
-
-## Endpoints Overview
-
-### Authentication
-- `POST /auth/register` - Register a new user
-- `POST /auth/login` - Login user
-- `POST /auth/refresh` - Refresh JWT token
-- `POST /auth/logout` - Logout user
-
-### Users
-- `GET /users/profile` - Get user profile (Protected)
-- `PUT /users/profile` - Update user profile (Protected)
-- `GET /users/:id` - Get user details (Protected, Admin)
-
-### Courses
-- `GET /courses` - List all courses
-- `GET /courses/:id` - Get course details
-- `POST /courses` - Create a course (Protected, Admin)
-- `PUT /courses/:id` - Update a course (Protected, Admin)
-- `DELETE /courses/:id` - Delete a course (Protected, Admin)
-
-### Enrollments
-- `POST /enrollments` - Enroll in a course (Protected)
-- `GET /enrollments` - Get user's enrollments (Protected)
-- `GET /enrollments/:courseId` - Get enrollment details (Protected)
-
-### Content
-- `GET /courses/:courseId/content` - Get course content
-- `POST /courses/:courseId/content` - Add content (Protected, Admin)
-- `PUT /content/:id` - Update content (Protected, Admin)
-
-### Quizzes
-- `GET /courses/:courseId/quizzes` - Get course quizzes
-- `POST /courses/:courseId/quizzes` - Create quiz (Protected, Admin)
-- `POST /quizzes/:id/submit` - Submit quiz answers (Protected)
-
-### Certification
-- `GET /users/certifications` - Get user certificates (Protected)
-- `POST /courses/:courseId/certification` - Take certification test (Protected)
-- `GET /certifications/:id` - Get certification details (Protected)
-
-### Admin
-- `GET /admin/analytics` - Get platform analytics (Protected, Admin)
-- `GET /admin/users` - List all users (Protected, Admin)
-- `GET /admin/reports` - Get reports (Protected, Admin)
-
-## Response Format
-
-### Success Response
-```json
 {
-  "success": true,
-  "data": {},
-  "message": "Operation successful"
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "Password123!",
+  "confirmPassword": "Password123!",
+  "role": "student"
+}
+
+Response (201): Tokens and user object
+```
+
+### Login
+```
+POST /auth/login
+
+{
+  "email": "john@example.com",
+  "password": "Password123!"
+}
+
+Response (200): Tokens and user object
+```
+
+### Change Password
+```
+POST /auth/change-password
+Authorization: Bearer <token>
+
+{
+  "currentPassword": "...",
+  "newPassword": "...",
+  "confirmPassword": "..."
 }
 ```
 
-### Error Response
+---
+
+## Course Endpoints
+
+### Get All Courses
+```
+GET /courses?page=1&limit=10&category=AI/ML&difficulty=beginner
+```
+
+### Get Course Details
+```
+GET /courses/:id
+```
+
+### Create Course
+```
+POST /courses
+Authorization: Bearer <token>
+
+{
+  "title": "Course Title",
+  "description": "...",
+  "category": "AI/ML",
+  "difficulty": "beginner",
+  "duration": 20
+}
+```
+
+### Update Course
+```
+PUT /courses/:id
+Authorization: Bearer <token>
+```
+
+### Delete Course
+```
+DELETE /courses/:id
+Authorization: Bearer <token>
+```
+
+---
+
+## Enrollment Endpoints
+
+### Enroll in Course
+```
+POST /enrollments
+Authorization: Bearer <token>
+
+{
+  "courseId": "..."
+}
+```
+
+### Get Enrollments
+```
+GET /enrollments
+Authorization: Bearer <token>
+```
+
+### Update Progress
+```
+PUT /enrollments/:courseId/progress
+Authorization: Bearer <token>
+
+{
+  "progress": 50
+}
+```
+
+### Complete Course
+```
+PUT /enrollments/:courseId/complete
+Authorization: Bearer <token>
+```
+
+---
+
+## Quiz Endpoints
+
+### Submit Quiz
+```
+POST /quizzes/:quizId/submit
+Authorization: Bearer <token>
+
+{
+  "answers": ["A", "B", "C", ...]
+}
+```
+
+### Create Quiz
+```
+POST /quizzes
+Authorization: Bearer <token>
+
+{
+  "courseId": "...",
+  "title": "Quiz Title",
+  "description": "...",
+  "questions": [...]
+}
+```
+
+---
+
+## User Endpoints
+
+### Get Profile
+```
+GET /users/profile
+Authorization: Bearer <token>
+```
+
+### Update Profile
+```
+PUT /users/profile
+Authorization: Bearer <token>
+
+{
+  "name": "...",
+  "bio": "...",
+  "avatar": "..."
+}
+```
+
+---
+
+## Certificate Endpoints
+
+### Get Certificates
+```
+GET /certificates
+Authorization: Bearer <token>
+```
+
+### Award Certificate
+```
+POST /certificates
+Authorization: Bearer <token>
+
+{
+  "userId": "...",
+  "courseId": "..."
+}
+```
+
+---
+
+## Notification Endpoints
+
+All require: `Authorization: Bearer <token>`
+
+```
+GET  /notifications
+GET  /notifications/unread/count
+PUT  /notifications/:id/read
+DELETE /notifications/:id
+```
+
+---
+
+## Error Response Format
+
 ```json
 {
   "success": false,
@@ -76,72 +220,12 @@ Authorization: Bearer <token>
 }
 ```
 
-## Status Codes
-- `200` - OK
-- `201` - Created
-- `400` - Bad Request
-- `401` - Unauthorized
-- `403` - Forbidden
-- `404` - Not Found
-- `500` - Internal Server Error
-
-## Examples
-
-### Register User
-```
-POST /auth/register
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "securepassword123"
-}
-```
-
-### Login
-```
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "john@example.com",
-  "password": "securepassword123"
-}
-
-Response:
-{
-  "success": true,
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIs...",
-    "user": {
-      "id": "user_id",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "role": "student"
-    }
-  }
-}
-```
-
-### Get Courses
-```
-GET /courses
-
-Response:
-{
-  "success": true,
-  "data": [
-    {
-      "id": "course_1",
-      "title": "Introduction to AI",
-      "description": "Learn AI basics",
-      "instructor": "Jane Smith",
-      "enrolledStudents": 150
-    }
-  ]
-}
-```
-
 ---
-**Note**: More detailed endpoint documentation will be added as the project develops.
+
+## Test Credentials
+
+```
+Admin: admin@aieduassist.com / Admin123
+Instructor: instructor@aieduassist.com / Instructor123
+Student: student1@aieduassist.com / Student123
+```

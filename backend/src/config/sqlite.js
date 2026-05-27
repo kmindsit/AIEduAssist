@@ -127,9 +127,100 @@ const createTables = () => {
         type TEXT,
         title TEXT,
         message TEXT,
+        priority TEXT DEFAULT 'normal',
         read INTEGER DEFAULT 0,
+        actionUrl TEXT,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `);
+
+    // Notification Preferences table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS notification_preferences (
+        id TEXT PRIMARY KEY,
+        user_id TEXT UNIQUE NOT NULL,
+        emailNotifications INTEGER DEFAULT 1,
+        inAppNotifications INTEGER DEFAULT 1,
+        quizReminders INTEGER DEFAULT 1,
+        courseUpdates INTEGER DEFAULT 1,
+        discussionNotifications INTEGER DEFAULT 1,
+        quietHoursEnabled INTEGER DEFAULT 0,
+        quietHoursStart TEXT DEFAULT '21:00',
+        quietHoursEnd TEXT DEFAULT '09:00',
+        notificationSummary INTEGER DEFAULT 0,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `);
+
+    // Discussions table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS discussions (
+        id TEXT PRIMARY KEY,
+        course_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        content TEXT,
+        tags TEXT,
+        views INTEGER DEFAULT 0,
+        likes INTEGER DEFAULT 0,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (course_id) REFERENCES courses(id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `);
+
+    // Discussion Replies table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS discussion_replies (
+        id TEXT PRIMARY KEY,
+        discussion_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        content TEXT,
+        likes INTEGER DEFAULT 0,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (discussion_id) REFERENCES discussions(id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `);
+
+    // Content Modules table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS content_modules (
+        id TEXT PRIMARY KEY,
+        course_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        content TEXT,
+        "order" INTEGER,
+        videoUrl TEXT,
+        duration INTEGER DEFAULT 0,
+        isPublished INTEGER DEFAULT 1,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (course_id) REFERENCES courses(id)
+      )
+    `);
+
+    // Quiz Questions table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS quiz_questions (
+        id TEXT PRIMARY KEY,
+        quiz_id TEXT NOT NULL,
+        questionText TEXT NOT NULL,
+        questionType TEXT DEFAULT 'multiple-choice',
+        options TEXT,
+        correctAnswer TEXT,
+        explanation TEXT,
+        "order" INTEGER,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
       )
     `);
 
