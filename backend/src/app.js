@@ -62,26 +62,29 @@ app.use('/api/auth', require('./routes/auth'));
 // User routes
 app.use('/api/users', require('./routes/users'));
 
-// Course routes
-app.use('/api/courses', require('./routes/courses'));
+// Course routes (SQLite)
+app.use('/api/courses', require('./routes/coursesSQLite'));
 
-// Enrollment routes
-app.use('/api/enrollments', require('./routes/enrollments'));
+// Enrollment routes (SQLite)
+app.use('/api/enrollments', require('./routes/enrollmentsSQLite'));
 
-// Quiz routes
-app.use('/api/quizzes', require('./routes/quizzes'));
+// Quiz routes (SQLite)
+app.use('/api/quizzes', require('./routes/quizzesSQLite'));
 
-// Admin routes
-app.use('/api/admin', require('./routes/admin'));
+// Certificate routes (SQLite)
+app.use('/api/certificates', require('./routes/certificatesSQLite'));
 
-// Notification routes
-app.use('/api/notifications', require('./routes/notifications'));
+// Discussion routes (SQLite)
+app.use('/api/discussions', require('./routes/discussionsSQLite'));
 
-// Certificate routes
-app.use('/api/certificates', require('./routes/certificates'));
+// Notification routes (SQLite)
+app.use('/api/notifications', require('./routes/notificationsSQLite'));
 
-// Discussion routes
-app.use('/api/discussions', require('./routes/discussions'));
+// Analytics routes (SQLite)
+app.use('/api/analytics', require('./routes/analyticsSQLite'));
+
+// Admin routes (SQLite)
+app.use('/api/admin', require('./routes/adminSQLite'));
 
 // Content routes
 app.use('/api/content', require('./routes/content'));
