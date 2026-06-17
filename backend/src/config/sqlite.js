@@ -51,12 +51,15 @@ const createTables = () => {
         title TEXT NOT NULL,
         description TEXT,
         category TEXT,
-        level TEXT,
-        duration INTEGER,
+        difficulty TEXT DEFAULT 'beginner',
+        price REAL DEFAULT 0,
         instructor_id TEXT NOT NULL,
-        status TEXT DEFAULT 'published',
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        duration_hours INTEGER DEFAULT 0,
+        thumbnail_url TEXT,
+        prerequisites TEXT,
+        isPublished INTEGER DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (instructor_id) REFERENCES users(id)
       )
     `);

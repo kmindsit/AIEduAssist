@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const db = require('../config/sqlite');
+const { dbPromise } = require('../config/sqlite');
 
 class CourseSQLite {
   static async create(courseData) {
@@ -19,7 +19,7 @@ class CourseSQLite {
     const id = uuidv4();
     const now = new Date().toISOString();
 
-    await db.run(
+    await dbPromise.run(
       `INSERT INTO courses (id, title, description, category, difficulty, price, instructor_id, duration_hours, thumbnail_url, prerequisites, isPublished, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [id, title, description, category, difficulty, price, instructor_id, duration_hours, thumbnail_url, prerequisites, isPublished ? 1 : 0, now, now]
@@ -29,7 +29,7 @@ class CourseSQLite {
   }
 
   static async findById(id) {
-    return db.get('SELECT * FROM courses WHERE id = ?', [id]);
+    return dbPromise.get('SELECT * FROM courses WHERE id = ?', [id]);
   }
 
   static async findAll(filters = {}) {
@@ -73,7 +73,7 @@ class CourseSQLite {
       params.push(filters.offset);
     }
 
-    return db.all(query, params);
+    return dbPromise.all(query, params);
   }
 
   static async count(filters = {}) {
@@ -89,7 +89,7 @@ class CourseSQLite {
       params.push(filters.instructor_id);
     }
 
-    const result = await db.get(query, params);
+    const result = await dbPromise.get(query, params);
     return result.count;
   }
 
@@ -107,7 +107,7 @@ class CourseSQLite {
     values.push(now);
     values.push(id);
 
-    await db.run(
+    await dbPromise.run(
       `UPDATE courses SET ${fields.join(', ')} WHERE id = ?`,
       values
     );
@@ -116,12 +116,12 @@ class CourseSQLite {
   }
 
   static async delete(id) {
-    await db.run('DELETE FROM courses WHERE id = ?', [id]);
+    await dbPromise.run('DELETE FROM courses WHERE id = ?', [id]);
     return true;
   }
 
   static async getPopular(limit = 10) {
-    return db.all(
+    return dbPromise.all(
       `SELECT c.*, COUNT(e.id) as enrollmentCount
        FROM courses c
        LEFT JOIN enrollments e ON c.id = e.course_id
@@ -134,14 +134,14 @@ class CourseSQLite {
   }
 
   static async getByInstructor(instructor_id) {
-    return db.all(
+    return dbPromise.all(
       'SELECT * FROM courses WHERE instructor_id = ? ORDER BY created_at DESC',
       [instructor_id]
     );
   }
 
   static async search(query) {
-    return db.all(
+    return dbPromise.all(
       `SELECT * FROM courses 
        WHERE isPublished = 1 AND (title LIKE ? OR description LIKE ? OR category LIKE ?)
        ORDER BY created_at DESC
@@ -151,17 +151,17 @@ class CourseSQLite {
   }
 
   static async getCourseStats(courseId) {
-    const enrollmentCount = await db.get(
+    const enrollmentCount = await dbPromise.get(
       'SELECT COUNT(*) as count FROM enrollments WHERE course_id = ?',
       [courseId]
     );
 
-    const avgRating = await db.get(
+    const avgRating = await dbPromise.get(
       'SELECT AVG(rating) as avg FROM enrollments WHERE course_id = ? AND rating IS NOT NULL',
       [courseId]
     );
 
-    const completionCount = await db.get(
+    const completionCount = await dbPromise.get(
       'SELECT COUNT(*) as count FROM enrollments WHERE course_id = ? AND status = ?',
       [courseId, 'completed']
     );
